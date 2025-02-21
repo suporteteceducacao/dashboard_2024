@@ -13,7 +13,7 @@ st.set_page_config(
 )
 
 # Adicionando o logotipo na barra lateral
-logo_url = 'img/logo_2021.png'
+logo_url = 'img/diplomado.png'
 with st.sidebar:
     st.image(logo_url, width=250)
 
