@@ -35,8 +35,8 @@ def load_data(file_path):
         return None
 
 # Carregar planilhas
-df_login = load_data('xls/https://raw.githubusercontent.com/suporteteceducacao/dashboard_2024/main/xls/senhas_acesso_2.xlsx')
-df_resultados = load_data('xls/https://raw.githubusercontent.com/suporteteceducacao/dashboard_2024/main/xls/resultados.xlsx')
+df_login = load_data('https://raw.githubusercontent.com/suporteteceducacao/dashboard_2024/main/xls/senhas_acesso_2.xlsx')
+df_resultados = load_data('https://raw.githubusercontent.com/suporteteceducacao/dashboard_2024/main/xls/resultados.xlsx')
 
 if df_login is None or df_resultados is None:
     st.stop()
