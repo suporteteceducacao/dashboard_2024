@@ -9,6 +9,14 @@ import os
 import pandas as pd
 import streamlit as st
 
+# Configuração da página Streamlit
+st.set_page_config(
+    page_title="Dashboard Escolar",
+    page_icon="🎓",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
 # Obter o diretório do script atual
 base_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -30,29 +38,7 @@ else:
     except Exception as e:
         st.error(f"Erro ao carregar os arquivos: {str(e)}")
         
-# Obter o diretório do script atual
-base_dir = os.path.dirname(os.path.abspath(__file__))
-
-# Caminho para os arquivos Excel
-caminho_senhas = os.path.join(base_dir, 'xls', 'senhas_acesso_2.xlsx')
-caminho_resultados = os.path.join(base_dir, 'xls', 'resultados.xlsx')
-
-# Carregar as planilhas
-try:
-    df_senhas = pd.read_excel(caminho_senhas)
-    df_resultados = pd.read_excel(caminho_resultados)
-except Exception as e:
-    st.error(f"Erro ao carregar os arquivos: {str(e)}")
-    
-# Configuração da página Streamlit
-st.set_page_config(
-    page_title="Dashboard Escolar",
-    page_icon="🎓",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
-
-# Adicionando o logotipo na barra lateral
+  # Adicionando o logotipo na barra lateral
 #logo_url = 'img/diplomado.png'
 #with st.sidebar:
     #st.image(logo_url, width=250)
