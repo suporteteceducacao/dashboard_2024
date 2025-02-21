@@ -34,8 +34,8 @@ def load_data(file_path):
         return None
 
 # Carregar planilhas
-df_login = load_data('senhas_acesso_2.xlsx')
-df_resultados = load_data('resultados.xlsx')
+df_login = load_data('xls/senhas_acesso_2.xlsx')
+df_resultados = load_data('xls/resultados.xlsx')
 
 if df_login is None or df_resultados is None:
     st.stop()
