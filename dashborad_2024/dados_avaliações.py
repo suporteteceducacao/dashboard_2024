@@ -5,6 +5,31 @@ import seaborn as sns
 import numpy as np
 import os
 
+import os
+import pandas as pd
+import streamlit as st
+
+# Obter o diretório do script atual
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Caminho para os arquivos Excel
+caminho_senhas = os.path.join(base_dir, 'xls', 'senhas_acesso_2.xlsx')
+caminho_resultados = os.path.join(base_dir, 'xls', 'resultados.xlsx')
+
+# Verificar se os arquivos existem
+if not os.path.exists(caminho_senhas):
+    st.error(f"Arquivo não encontrado: {caminho_senhas}")
+elif not os.path.exists(caminho_resultados):
+    st.error(f"Arquivo não encontrado: {caminho_resultados}")
+else:
+    # Carregar as planilhas
+    try:
+        df_senhas = pd.read_excel(caminho_senhas)
+        df_resultados = pd.read_excel(caminho_resultados)
+        st.success("Arquivos carregados com sucesso!")
+    except Exception as e:
+        st.error(f"Erro ao carregar os arquivos: {str(e)}")
+        
 # Obter o diretório do script atual
 base_dir = os.path.dirname(os.path.abspath(__file__))
 
