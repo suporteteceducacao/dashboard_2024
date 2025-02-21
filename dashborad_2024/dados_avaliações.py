@@ -1,14 +1,3 @@
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-import numpy as np
-import os
-
-import os
-import pandas as pd
-import streamlit as st
-
 # Configuração da página Streamlit
 st.set_page_config(
     page_title="Dashboard Escolar",
@@ -16,6 +5,15 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
+
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+import os
+
+
 
 # Obter o diretório do script atual
 base_dir = os.path.dirname(os.path.abspath(__file__))
