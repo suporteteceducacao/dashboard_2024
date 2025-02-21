@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import numpy as np
 
 # Configuração da página Streamlit
 st.set_page_config(
@@ -95,13 +96,14 @@ if st.session_state.login_success:
     if df_escola.empty:
         st.warning("Nenhum dado encontrado para esta escola.")
     else:
+        
         # Criar abas
         tab1, tab2 = st.tabs(["Dados Estatísticos", "Gráficos"])
-
+        
         with tab1:
             # Mostrar todos os resultados da escola logada
-            st.header(f"Bem-vindo {st.session_state.escola_logada}")
-            
+            st.markdown(f"<h3>Bem-vindo escola <span style='color: blue;'>{st.session_state.escola_logada}</span></h1>", unsafe_allow_html=True)
+
             # Exibir todos os resultados
             st.subheader("Tabela de Resultados")
             st.dataframe(df_escola, use_container_width=True)
@@ -227,54 +229,86 @@ if st.session_state.login_success:
                 st.warning("Não há dados suficientes para calcular diferenças e variações.")
 
         with tab2:
+            # Mostrar todos os resultados da escola logada
+            st.markdown(f"<h3>Bem-vindo escola <span style='color: blue;'>{st.session_state.escola_logada}</span></h1>", unsafe_allow_html=True)
+
             st.header("Gráficos de Desempenho")
-            
+                        
             # Verificar se as colunas necessárias existem
-            required_columns = ['intermediario', 'defasagem', 'adequado', 'Acerto Total', 'Componente Curricular', 'Etapa']
+            required_columns = ['Defasagem', 'intermediario', 'adequado', 'Acerto Total', 'Etapa', 'Componente Curricular', 'Ciclo', 'Modalidade']
             if all(column in df_escola.columns for column in required_columns):
                 # Converter colunas para numérico
+                df_escola['Defasagem'] = pd.to_numeric(df_escola['Defasagem'], errors='coerce')
                 df_escola['intermediario'] = pd.to_numeric(df_escola['intermediario'], errors='coerce')
-                df_escola['defasagem'] = pd.to_numeric(df_escola['defasagem'], errors='coerce')
                 df_escola['adequado'] = pd.to_numeric(df_escola['adequado'], errors='coerce')
                 df_escola['Acerto Total'] = pd.to_numeric(df_escola['Acerto Total'], errors='coerce')
 
-                # Selecionar Componente Curricular e Etapa
-                componentes_curriculares = df_escola['Componente Curricular'].unique()
+                # Selecionar Etapa, Componente Curricular e Modalidade
                 etapas = df_escola['Etapa'].unique()
+                componentes_curriculares = df_escola['Componente Curricular'].unique()
+                modalidades = df_escola['Modalidade'].unique()
 
-                selected_componente = st.selectbox("Selecione o Componente Curricular:", componentes_curriculares)
                 selected_etapa = st.selectbox("Selecione a Etapa:", etapas)
+                selected_componente = st.selectbox("Selecione o Componente Curricular:", componentes_curriculares)
+                selected_modalidade = st.selectbox("Selecione a Modalidade:", modalidades)
 
                 # Filtrar dados
-                filtered_data = df_escola[(df_escola['Componente Curricular'] == selected_componente) & (df_escola['Etapa'] == selected_etapa)]
+                filtered_data = df_escola[
+                    (df_escola['Etapa'] == selected_etapa) & 
+                    (df_escola['Componente Curricular'] == selected_componente) & 
+                    (df_escola['Modalidade'] == selected_modalidade)
+                ]
 
                 if not filtered_data.empty:
-                    # Gráfico de Linhas
-                    st.subheader("Gráfico de Linhas")
-                    fig, ax = plt.subplots()
-                    sns.lineplot(data=filtered_data, x='Ciclo', y='intermediario', label='Intermediário', ax=ax)
-                    sns.lineplot(data=filtered_data, x='Ciclo', y='defasagem', label='Defasagem', ax=ax)
-                    sns.lineplot(data=filtered_data, x='Ciclo', y='adequado', label='Adequado', ax=ax)
-                    sns.lineplot(data=filtered_data, x='Ciclo', y='Acerto Total', label='Acerto Total', ax=ax)
-                    ax.set_title(f"Desempenho ao longo dos Ciclos - {selected_componente} - {selected_etapa}")
-                    ax.set_xlabel("Ciclo")
-                    ax.set_ylabel("Pontuação")
+                    # Gráfico de Barras Empilhadas 100% (Horizontal)
+                    st.subheader("Gráfico de Percentual Médio por Faixa de Aprendizagem")
+                    fig, ax = plt.subplots(figsize=(8, 3))  # Tamanho menor para melhor visualização
+                    
+                    # Calcular proporções para cada categoria
+                    total = filtered_data[['Defasagem', 'intermediario', 'adequado']].sum(axis=1)
+                    filtered_data['Defasagem_pct'] = filtered_data['Defasagem'] / total * 100
+                    filtered_data['intermediario_pct'] = filtered_data['intermediario'] / total * 100
+                    filtered_data['adequado_pct'] = filtered_data['adequado'] / total * 100
+
+                    # Plotar gráfico de barras empilhadas 100% (horizontal)
+                    left = np.zeros(len(filtered_data))
+                    for col, color in zip(['Defasagem_pct', 'intermediario_pct', 'adequado_pct'], ['yellow', 'lightgreen', 'darkgreen']):
+                        ax.barh(filtered_data['Ciclo'], filtered_data[col], left=left, label=col.split('_')[0], color=color)
+                        left += filtered_data[col]
+
+                    # Adicionar rótulos com os valores
+                    for i, ciclo in enumerate(filtered_data['Ciclo']):
+                        ax.text(filtered_data['Defasagem_pct'].iloc[i] / 2, i, f"{filtered_data['Defasagem_pct'].iloc[i]:.1f}%", ha='center', va='center')
+                        ax.text(filtered_data['Defasagem_pct'].iloc[i] + filtered_data['intermediario_pct'].iloc[i] / 2, i, f"{filtered_data['intermediario_pct'].iloc[i]:.1f}%", ha='center', va='center')
+                        ax.text(filtered_data['Defasagem_pct'].iloc[i] + filtered_data['intermediario_pct'].iloc[i] + filtered_data['adequado_pct'].iloc[i] / 2, i, f"{filtered_data['adequado_pct'].iloc[i]:.1f}%", ha='center', va='center')
+
+                    ax.set_title(f"Proporção de Desempenho por Ciclo - {selected_etapa} - {selected_componente} - {selected_modalidade}")
+                    ax.set_xlabel("Proporção (%)")
+                    ax.set_ylabel("Ciclo")
+                    ax.legend(title="Categoria")
+
+                    # Ajustar a legenda
+                    ax.legend(title="Categoria", fontsize='small', bbox_to_anchor=(1.05, 1), loc='upper left')
+
                     st.pyplot(fig)
 
-                    # Gráfico de Barras
-                    st.subheader("Gráfico de Barras")
-                    fig, ax = plt.subplots()
-                    filtered_data_melted = filtered_data.melt(id_vars=['Ciclo'], value_vars=['intermediario', 'defasagem', 'adequado', 'Acerto Total'], 
-                                                            var_name='Categoria', value_name='Pontuação')
-                    sns.barplot(data=filtered_data_melted, x='Ciclo', y='Pontuação', hue='Categoria', ax=ax)
-                    ax.set_title(f"Comparação de Desempenho - {selected_componente} - {selected_etapa}")
+                    # Gráfico de Barras Verticais para Acerto Total
+                    st.subheader("Gráfico de Desempenho Médio")
+                    fig, ax = plt.subplots(figsize=(8, 4))  # Tamanho menor para melhor visualização
+                    sns.barplot(data=filtered_data, x='Ciclo', y='Acerto Total', color='blue', ax=ax)
+                    
+                    # Adicionar rótulos com os valores
+                    for i, ciclo in enumerate(filtered_data['Ciclo']):
+                        ax.text(i, filtered_data['Acerto Total'].iloc[i], f"{filtered_data['Acerto Total'].iloc[i]:.1f}", ha='center', va='bottom')
+
+                    ax.set_title(f"Acerto Total por Ciclo - {selected_etapa} - {selected_componente} - {selected_modalidade}")
                     ax.set_xlabel("Ciclo")
-                    ax.set_ylabel("Pontuação")
+                    ax.set_ylabel("Acerto Total")
                     st.pyplot(fig)
                 else:
-                    st.warning("Nenhum dado encontrado para o Componente Curricular e Etapa selecionados.")
+                    st.warning("Nenhum dado encontrado para os filtros selecionados.")
             else:
-                st.error("Ainda em fase de construção.")
+                st.error(f"As colunas necessárias para os gráficos não foram encontradas nos dados. Colunas esperadas: {required_columns}")
 
     # Botão de logout (corrigido para limpar sessão imediatamente)
     if st.sidebar.button("Sair"):
