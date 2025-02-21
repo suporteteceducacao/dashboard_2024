@@ -3,7 +3,22 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+import os
 
+# Obter o diretório do script atual
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Caminho para os arquivos Excel
+caminho_senhas = os.path.join(base_dir, 'xls', 'senhas_acesso_2.xlsx')
+caminho_resultados = os.path.join(base_dir, 'xls', 'resultados.xlsx')
+
+# Carregar as planilhas
+try:
+    df_senhas = pd.read_excel(caminho_senhas)
+    df_resultados = pd.read_excel(caminho_resultados)
+except Exception as e:
+    st.error(f"Erro ao carregar os arquivos: {str(e)}")
+    
 # Configuração da página Streamlit
 st.set_page_config(
     page_title="Dashboard Escolar",
