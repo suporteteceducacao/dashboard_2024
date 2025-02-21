@@ -14,7 +14,7 @@ st.set_page_config(
 )
 
 # Adicionando o logotipo na barra lateral
-#logo_url = 'img/https://raw.githubusercontent.com/suporteteceducacao/dashboard_2024/main/img/logo_2021.png''
+#logo_url = 'dashborad_2024/img/diplomado.png'
 #with st.sidebar:
     #st.image(logo_url, width=250)
 
@@ -35,8 +35,8 @@ def load_data(file_path):
         return None
 
 # Carregar planilhas
-df_login = load_data('https://raw.githubusercontent.com/suporteteceducacao/dashboard_2024/main/xls/senhas_acesso_2.xlsx')
-df_resultados = load_data('')
+df_login = load_data('dashborad_2024/xls/senhas_acesso_2.xlsx')
+df_resultados = load_data('dashborad_2024/xls/resultados.xlsx')
 
 if df_login is None or df_resultados is None:
     st.stop()
