@@ -13,9 +13,9 @@ st.set_page_config(
 )
 
 # Adicionando o logotipo na barra lateral
-logo_url = 'img/diplomado.png'
-with st.sidebar:
-    st.image(logo_url, width=250)
+#logo_url = 'img/diplomado.png'
+#with st.sidebar:
+    #st.image(logo_url, width=250)
 
 # Título principal
 title_text = "📊 Dashboard de Resultados Escolares - Avaliações Externas (CNCA, AVALIE.CE e PNRA)"
