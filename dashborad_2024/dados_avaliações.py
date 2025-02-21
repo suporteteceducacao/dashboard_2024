@@ -14,7 +14,7 @@ st.set_page_config(
 )
 
 # Adicionando o logotipo na barra lateral
-logo_url = 'img/diplomado.png'
+logo_url = 'https://raw.githubusercontent.com/suporteteceducacao/dashboard_2024/main/img/logo_2021.png''
 with st.sidebar:
     st.image(logo_url, width=250)
 
